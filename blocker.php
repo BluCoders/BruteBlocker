@@ -68,8 +68,9 @@ class IPTables{
 		if($syslog) $this->logger("Taking control of iptables (v4 chain: ".$this->chain4.")");
 		// get IPs from iptables, add them to our list and rewrite them
 		$data = `iptables -L {$this->chain4} -n | grep DROP | sed 's/  */ /g' | cut -d ' ' -f 4`;
-		if(empty(trim($data))) return;
-		$data = explode("\n",trim($data));
+		$data = trim($data);
+		if(empty($data)) return;
+		$data = explode("\n",$data);
 		$ips = array();
 		foreach($data as $d) $ips[$d]=true;
 		ksort($ips);
