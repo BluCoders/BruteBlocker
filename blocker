@@ -1,20 +1,16 @@
+#!/usr/bin/php -q
 <?php
-// lol, quick visit, right?
-// // Right, I was just about to say, I've managed to work out how it's done
-// // quite quickly xD
-
-//$file="/var/log/auth.log";
-$path = "/opt/sshblock";
-$file="$path/logpipe";
-$db = "$path/block.db";
-
-
+// Path to logpipe
+// Can be created with
+// 	mkfifo <destination>
+// Remember to have this in /etc/rsyslog.d/sshblock.conf:
+// 	auth.*	|/opt/sshblock/logpipe
+$file="/opt/sshblock/logpipe";
+// Path to database that sshblock uses:
+$db = "/opt/sshblock/block.db";
 
 $ipt = new IPTables("BLOCKS","BLOCKS");
 
-//$data = $ipt->listflush4();
-
-//$t = new Tail($file);
 $r = new Read($file);
 // Block's callback is IPTables
 $b = new Block($db,5,$ipt); // 5 attempts = block
@@ -24,7 +20,6 @@ $data4 = $ipt->listflush4();
 $b->startup($data4);
 
 while(1){
-	
 	$r->open();
 	while (($line=$r->getline())!==false) {
 		echo "<<: $line\n";
