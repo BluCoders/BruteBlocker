@@ -1,5 +1,8 @@
 #!/usr/bin/php -q
 <?php
+
+$attempts = 3;
+
 // Path to logpipe
 // Can be created with
 // 	mkfifo <destination>
@@ -13,7 +16,7 @@ $ipt = new IPTables("BLOCKS","BLOCKS");
 
 $r = new Read($file);
 // Block's callback is IPTables
-$b = new Block($db,5,$ipt); // 5 attempts = block
+$b = new Block($db, $attempts, $ipt);
 
 
 $data4 = $ipt->listflush4();
