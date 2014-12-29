@@ -242,7 +242,7 @@ class Block{
 
 	function insert($l){
 		$l = trim($l);
-		if(preg_match('/^([a-zA-Z]+\s+[0-9]+\s+[0-9:]+) ([^ ]+) sshd\[[0-9]+\]: (.*)$/', $l, $m)){
+		if(preg_match('/^([a-zA-Z]+\s+[0-9]+\s+[0-9:]+) ([^ ]*) sshd\[[0-9]+\]: (.*)$/', $l, $m)){
 			$l = $m[3];
 		} else if(preg_match('/^([0-9-T:\.\+]+) ([^ ]+) sshd\[[0-9]+\]: (.*)$/', $l, $m)) {
 			$l = $m[3];
@@ -257,12 +257,14 @@ class Block{
 			array_shift($m);
 			echo "failure4\n";
 			$this->failure4($m[1]);
+                        $this->lastip = $m[1];
 			return;
 		} else if(preg_match('/^Failed password for( invalid user)? ([^ ]+) from ([0-9a-f:]+) port ([0-9]+) ssh[12]$/', $l, $m)){
 			array_shift($m);
 			array_shift($m);
 			echo "failure6\n";
 			$this->failure6($m[1]);
+                        $this->lastip = $m[1];
 			return;
 		} else if(preg_match('/^Accepted password for ([^ ]+) from ([0-9a-f\.]+) port ([0-9]+) ssh[12]$/', $l, $m)){
 			array_shift($m);
@@ -274,7 +276,13 @@ class Block{
 			echo "accept6\n";
 			$this->success6($m[1]);
 			return;
-		}
+		} else if(preg_match('/^last message repeated (\d+) times$/', $l, $m)){
+                        echo "failure\n";
+                        for ( $i = 0; $i < $m[1]; $i++ ) {
+                                $this->failure4($this->lastip);
+                        }
+                        return;
+                }
 
 
 		if(preg_match('/^(pam|PAM)/', $l)) return;
