@@ -6,11 +6,11 @@ $attempts = 3;
 // Path to logpipe
 // Can be created with
 // 	mkfifo <destination>
-// Remember to have this in /etc/rsyslog.d/sshblock.conf:
-// 	auth.*	|/opt/sshblock/logpipe
-$file="/opt/sshblock/logpipe";
-// Path to database that sshblock uses:
-$db = "/opt/sshblock/block.db";
+// Remember to have this in /etc/rsyslog.d/bruteblocker.conf:
+// 	auth.*	|/opt/bruteblocker/logpipe
+$file="/opt/bruteblocker/logpipe";
+// Path to database that bruteblocker uses:
+$db = "/opt/bruteblocker/block.db";
 
 $ipt = new IPTables("BLOCKS","BLOCKS");
 
@@ -90,7 +90,7 @@ class IPTables{
 	function logger($mesg){
 		echo "$mesg\n";
 		$m = escapeshellarg($mesg);
-		`logger -t sshblock -- $m`;
+		`logger -t bruteblocker -- $m`;
 	}
 	function whitelist4($ip){
 		if(isset($this->block4[$ip])){
@@ -145,7 +145,7 @@ class Block{
 		file_put_contents($this->file,serialize($this->db));
 	}
 	function startup($data4){ // get in sync
-		$this->cb->logger("sshblock starting up");
+		$this->cb->logger("bruteblocker starting up");
 		foreach($this->db['blacklist4'] as $ip=>$banned){
 			if($banned){
 				$this->cb->blacklist4($ip, false);
@@ -247,7 +247,7 @@ class Block{
 		} else if(preg_match('/^([0-9-T:\.\+]+) ([^ ]+) sshd\[[0-9]+\]: (.*)$/', $l, $m)) {
 			$l = $m[3];
 		} else {
-			echo "Not sshd relevant afaik\n";
+			echo "Not relevant afaik\n";
 			return;
 		}
 
