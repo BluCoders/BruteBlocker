@@ -1,7 +1,7 @@
-sshblock
+BruteBlocker
 ========
 
-Blocks ssh bruteforces
+Blocks bruteforces
 
 Installing
 ----------
